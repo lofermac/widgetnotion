@@ -33,7 +33,8 @@
   <ul id="item-list"></ul>
 
   <script>
-    const databaseId = '1305335daaac8051a529fc63a809ce69';
+    // IDs e token
+    const databaseId = '1305335daaac8051a529fc63a809ce69'; 
     const token = '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';
 
     fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
@@ -46,11 +47,26 @@
     })
     .then(response => response.json())
     .then(data => {
-      const items = data.results.map(page => page.properties.Nome.title[0].text.content);
       const itemList = document.getElementById('item-list');
-      items.forEach(item => {
+      data.results.forEach(page => {
+        // Pega as propriedades específicas de cada item
+        const minAcordado = page.properties["Min Acordado (D)"]?.number || 'N/A';
+        const produtivo = page.properties["Produtivo (D)"]?.number || 'N/A';
+        const minOcioso = page.properties["Min Ocioso (D)"]?.number || 'N/A';
+        const prodPerc = page.properties["Prod Perc (D)"]?.number || 'N/A';
+        const espaco = page.properties["Espaço"]?.rich_text[0]?.text.content || 'N/A';
+        const lastRefreshed = page.properties["Last Refreshed"]?.date?.start || 'N/A';
+
+        // Cria o item da lista com as propriedades
         const listItem = document.createElement('li');
-        listItem.textContent = item;
+        listItem.innerHTML = `
+          <strong>Min Acordado (D):</strong> ${minAcordado}<br>
+          <strong>Produtivo (D):</strong> ${produtivo}<br>
+          <strong>Min Ocioso (D):</strong> ${minOcioso}<br>
+          <strong>Prod Perc (D):</strong> ${prodPerc}<br>
+          <strong>Espaço:</strong> ${espaco}<br>
+          <strong>Last Refreshed:</strong> ${lastRefreshed}
+        `;
         itemList.appendChild(listItem);
       });
     })
